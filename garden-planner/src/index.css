@@ -21,6 +21,18 @@ html {
   color-scheme: light;
 }
 
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --color-paper: #1d2317;
+  --color-paper-deep: #2e3826;
+  --color-ink: #e8e6d8;
+  --color-ink-soft: #a8b098;
+  --color-canopy: #4f9e60;
+  --color-leaf: #6fbf63;
+  --color-soil: #9a7a5f;
+  --color-warn: #e07a3e;
+}
+
 body {
   margin: 0;
   background: var(--color-paper);

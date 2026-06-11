@@ -1,21 +1,13 @@
 /**
- * Tab pages (§21.2). All stubs at scaffold time; each is replaced by its real
- * module in the phase noted. Kept in one file until the modules land — each
- * real page will move to its own lazy-loaded file (§25 lazy-load tabs).
+ * Tab pages (§21.2). Real modules export from their own files as phases land;
+ * the rest remain stubs that name their spec section and phase.
  */
 
 import { StubPage } from "./StubPage";
 
-export function EncyclopediaPage() {
-  return (
-    <StubPage
-      title="Encyclopedia"
-      purpose="Browse, search, and filter the plant catalog; deep-dive varieties, recipes, companions, and per-plant planting windows."
-      specRef="§10"
-      phase={0}
-    />
-  );
-}
+export { EncyclopediaPage } from "./encyclopedia/EncyclopediaPage";
+export { PlantDetailPage } from "./encyclopedia/PlantDetailPage";
+export { SettingsPage } from "./SettingsPage";
 
 export function CalendarPage() {
   return (
@@ -79,17 +71,6 @@ export function TasksPage() {
       purpose="Unified sow / transplant / water / fertilize / harvest / remedy reminders, grouped by due date."
       specRef="§19"
       phase={4}
-    />
-  );
-}
-
-export function SettingsPage() {
-  return (
-    <StubPage
-      title="Settings"
-      purpose="Units, hemisphere, theme, notifications, location — plus field mode, motion, and performance controls."
-      specRef="§7.12, §32.7"
-      phase={0}
     />
   );
 }
