@@ -8,17 +8,7 @@ import { StubPage } from "./StubPage";
 export { EncyclopediaPage } from "./encyclopedia/EncyclopediaPage";
 export { PlantDetailPage } from "./encyclopedia/PlantDetailPage";
 export { SettingsPage } from "./SettingsPage";
-
-export function CalendarPage() {
-  return (
-    <StubPage
-      title="Calendar"
-      purpose="Location-aware planting windows per plant and for the whole garden, as a banded season timeline."
-      specRef="§11"
-      phase={1}
-    />
-  );
-}
+export { CalendarPage } from "./CalendarPage";
 
 export function DesignerPage() {
   return (

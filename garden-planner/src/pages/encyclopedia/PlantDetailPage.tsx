@@ -14,6 +14,9 @@ import { formatDepthMm, formatLength, formatRange, formatTemp } from "../../lib/
 import { SpriteImg } from "../../components/SpriteImg";
 import { Badge } from "../../components/Badge";
 import { badgeTone } from "../../components/badgeTone";
+import { getActiveClimate } from "../../db/climateRepo";
+import { windowsFor } from "../../engines/plantingWindows";
+import { WindowChart, type ChartRow } from "../../components/WindowChart";
 
 const TABS = ["Overview", "Calendar", "Stages", "Care", "Varieties", "Recipes", "Companions"] as const;
 type Tab = (typeof TABS)[number];
@@ -142,13 +145,7 @@ export function PlantDetailPage() {
         </div>
       )}
 
-      {tab === "Calendar" && (
-        <p className="text-[var(--color-ink-soft)]">
-          Planting windows for your location render here once a climate profile
-          exists (Phase 1, spec §11). Frost-relative rules on file:{" "}
-          {describeSowRules(plant)}.
-        </p>
-      )}
+      {tab === "Calendar" && <PlantCalendarTab plant={plant} />}
 
       {tab === "Stages" && template && (
         <ol className="space-y-2">
@@ -312,6 +309,42 @@ export function PlantDetailPage() {
           </ul>
         ))}
     </section>
+  );
+}
+
+/** §10/§11: per-plant windows chart, one row per method. */
+function PlantCalendarTab({ plant }: { plant: Plant }) {
+  const hemisphere = useAppStore((s) => s.settings.hemisphere);
+  const defaultLocationId = useAppStore((s) => s.settings.defaultLocationId);
+  const year = new Date().getFullYear();
+  const climate = useLiveQuery(() => getActiveClimate(), [defaultLocationId]);
+
+  if (climate === undefined) return <Pad>Loading…</Pad>;
+  if (climate === null)
+    return (
+      <p className="text-sm text-[var(--color-ink-soft)]">
+        Set a garden location on the{" "}
+        <Link className="text-[var(--color-canopy)] underline" to="/calendar">
+          Calendar tab
+        </Link>{" "}
+        to see dated windows. Frost-relative rules on file: {describeSowRules(plant)}.
+      </p>
+    );
+
+  const bands = windowsFor(plant, climate.profile, year, hemisphere);
+  if (bands.length === 0) return <Pad>No planting windows derived for this plant.</Pad>;
+  const rows: ChartRow[] = bands.map((b) => ({
+    label: { indoor: "Indoor start", direct: "Direct sow", transplant: "Transplant", fall: "Fall sow" }[b.kind],
+    bands: [b],
+  }));
+  return (
+    <div>
+      <p className="mb-2 text-xs text-[var(--color-ink-soft)]">
+        {climate.location.label}
+        {climate.profile.hardinessZone ? ` · zone ${climate.profile.hardinessZone}` : ""}
+      </p>
+      <WindowChart rows={rows} climate={climate.profile} year={year} hemisphere={hemisphere} />
+    </div>
   );
 }
 
