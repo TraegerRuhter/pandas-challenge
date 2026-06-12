@@ -37,8 +37,19 @@ export default defineConfig({
       workbox: {
         // Precache the app shell, bundled catalog JSON, and sprites (§22).
         globPatterns: ["**/*.{js,css,html,svg,png,json,webmanifest}"],
-        // Runtime caching for weather/geocode (network-first + TTL) is added
-        // in Phase 1 with the adapters; adapters also cache in IndexedDB.
+        // §22: network-first with cache fallback for the weather/geocode
+        // APIs (the adapters also cache results in IndexedDB).
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/(api|archive-api|geocoding-api)\.open-meteo\.com\//,
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "open-meteo",
+              networkTimeoutSeconds: 8,
+              expiration: { maxEntries: 40, maxAgeSeconds: 7 * 24 * 3600 },
+            },
+          },
+        ],
       },
     }),
   ],

@@ -8,11 +8,15 @@
 
 export { families } from "./families";
 export { stageTemplates } from "./stageTemplates";
-export { plants } from "./plants";
+import { plants as corePlants } from "./plants";
+import { plantsExpansion } from "./plantsExpansion";
+
+/** Core 15 (Phase 0) + tranche 2 (Phase 5). Remaining §28.2 list: backlog. */
+export const plants = [...corePlants, ...plantsExpansion];
 export { varietals } from "./varietals";
 export { companions } from "./companions";
 export { recipes } from "./recipes";
 export { diagnostics } from "./diagnostics";
 
 /** Bump whenever bundled catalog content changes; drives re-seeding. */
-export const CATALOG_VERSION = 2;
+export const CATALOG_VERSION = 3;

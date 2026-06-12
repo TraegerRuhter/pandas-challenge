@@ -52,6 +52,12 @@ export const families: PlantFamily[] = [
     notes: "Spinach, chard, beet. Tolerant of cool weather; share leaf miners.",
   },
   {
+    id: "rosaceae",
+    commonName: "Rose family",
+    rotationGroup: "fruiting",
+    notes: "Strawberry, raspberry, apple. Mostly perennial; rotate strawberry beds every 3-4 years.",
+  },
+  {
     id: "lamiaceae",
     commonName: "Mint family",
     rotationGroup: "leafy",

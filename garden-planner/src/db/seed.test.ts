@@ -33,7 +33,9 @@ describe("catalog seeding (§7.1)", () => {
       .equals("brassicaceae")
       .toArray();
     expect(brassicas.map((p) => p.id).sort()).toEqual([
+      "arugula",
       "broccoli",
+      "cabbage",
       "kale",
       "radish",
     ]);

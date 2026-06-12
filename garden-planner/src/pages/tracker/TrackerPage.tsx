@@ -25,6 +25,7 @@ import { diffDays, formatShort, todayISO } from "../../lib/dates";
 import { SpriteImg } from "../../components/SpriteImg";
 import { Badge, badgeTone } from "../../components";
 import { DiagnosticDialog } from "./DiagnosticDialog";
+import { JournalPanel } from "./JournalPanel";
 
 export function TrackerPage() {
   const [diagnosing, setDiagnosing] = useState<{ instance: PlantInstance; symptom: string } | null>(null);
@@ -152,6 +153,7 @@ function InstanceCard({
   onMove: (dir: "advance" | "rollback") => Promise<void>;
 }) {
   const [harvestOpen, setHarvestOpen] = useState(false);
+  const [journalOpen, setJournalOpen] = useState(false);
   const [qty, setQty] = useState("");
   const [unit, setUnit] = useState<"g" | "kg" | "count" | "bunch" | "L">("count");
 
@@ -198,9 +200,12 @@ function InstanceCard({
         {harvestReady && (
           <CardBtn onClick={() => setHarvestOpen((v) => !v)}>🧺 Log harvest</CardBtn>
         )}
+        <CardBtn onClick={() => setJournalOpen((v) => !v)}>📓 Journal</CardBtn>
         <CardBtn onClick={() => void setInstanceStatus(inst.id, "harvested")}>✓ Done</CardBtn>
         <CardBtn onClick={() => void setInstanceStatus(inst.id, "failed")}>✗ Failed</CardBtn>
       </div>
+
+      {journalOpen && <JournalPanel instance={inst} />}
 
       {harvestOpen && (
         <form

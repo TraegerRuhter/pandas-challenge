@@ -78,12 +78,66 @@ export function SettingsPage() {
         </h2>
         <SeedStash />
 
+        <h2 className="border-t border-[var(--color-paper-deep)] pt-4 font-semibold">
+          Your data (§23)
+        </h2>
+        <DataSection />
+
         <p className="text-xs text-[var(--color-ink-soft)]">
-          All data stays on this device (§26). JSON/CSV export lands in Phase 5.
+          All data stays on this device (§26); backups and CSVs above are yours to keep.
           Frost-date convention: the "safe" date carries 10% residual frost risk (§30.4).
         </p>
       </div>
     </section>
+  );
+}
+
+function DataSection() {
+  const [msg, setMsg] = useState<string>();
+  return (
+    <div className="flex flex-wrap items-center gap-2 text-sm">
+      <button
+        type="button"
+        onClick={() =>
+          void import("../lib/exportImport").then(async (m) => {
+            m.downloadJson(await m.exportAll(), `plot_backup_${new Date().toISOString().slice(0, 10)}.json`);
+          })
+        }
+        className="rounded-lg bg-[var(--color-canopy)] px-3 py-1.5 font-medium text-white"
+      >
+        ⬇ Export backup (JSON)
+      </button>
+      <button
+        type="button"
+        onClick={() => void import("../lib/exportImport").then((m) => m.exportCsvs())}
+        className="rounded-lg bg-[var(--color-paper-deep)] px-3 py-1.5 font-medium"
+      >
+        ⬇ Export analysis CSVs
+      </button>
+      <label className="cursor-pointer rounded-lg bg-[var(--color-paper-deep)] px-3 py-1.5 font-medium">
+        ⬆ Import backup…
+        <input
+          type="file"
+          accept="application/json"
+          className="sr-only"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (!f) return;
+            if (!window.confirm("Importing REPLACES all data on this device with the backup. Continue?")) return;
+            void f
+              .text()
+              .then(async (txt) => {
+                const m = await import("../lib/exportImport");
+                await m.importAll(JSON.parse(txt));
+                setMsg("Import complete ✓ — reloading…");
+                window.setTimeout(() => window.location.reload(), 800);
+              })
+              .catch((err) => setMsg(`Import failed: ${String(err)}`));
+          }}
+        />
+      </label>
+      {msg && <span className="text-xs">{msg}</span>}
+    </div>
   );
 }
 
