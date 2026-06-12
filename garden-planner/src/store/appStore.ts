@@ -68,6 +68,8 @@ export const useAppStore = create<AppState>()((set, get) => ({
         await db.settings.put({ id: SETTINGS_ID, ...defaultSettings });
       }
       set({ bootState: "ready" });
+      // §13.2/§19: the daily stage pass runs on every app open, after boot.
+      void import("../db/instancesRepo").then((m) => m.runDailyPass());
     } catch (e) {
       set({ bootState: "error", bootError: String(e) });
     }

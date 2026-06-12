@@ -9,17 +9,7 @@ export { EncyclopediaPage } from "./encyclopedia/EncyclopediaPage";
 export { PlantDetailPage } from "./encyclopedia/PlantDetailPage";
 export { SettingsPage } from "./SettingsPage";
 export { CalendarPage } from "./CalendarPage";
-
-export function TrackerPage() {
-  return (
-    <StubPage
-      title="Tracker"
-      purpose="Growth stages over real time: projected timelines, auto-advance, manual advance/rollback with diagnostics."
-      specRef="§13–14"
-      phase={3}
-    />
-  );
-}
+export { TrackerPage } from "./tracker/TrackerPage";
 
 export function PlantNextPage() {
   return (

@@ -12,6 +12,7 @@ export { plants } from "./plants";
 export { varietals } from "./varietals";
 export { companions } from "./companions";
 export { recipes } from "./recipes";
+export { diagnostics } from "./diagnostics";
 
 /** Bump whenever bundled catalog content changes; drives re-seeding. */
-export const CATALOG_VERSION = 1;
+export const CATALOG_VERSION = 2;

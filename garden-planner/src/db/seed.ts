@@ -7,6 +7,7 @@
 import {
   CATALOG_VERSION,
   companions,
+  diagnostics,
   families,
   plants,
   recipes,
@@ -30,6 +31,7 @@ export async function seedCatalogIfNeeded(db: PlotDB): Promise<boolean> {
       db.catalog_varietals,
       db.catalog_companions,
       db.catalog_recipes,
+      db.catalog_diagnostics,
       db.caches,
     ],
     async () => {
@@ -40,6 +42,7 @@ export async function seedCatalogIfNeeded(db: PlotDB): Promise<boolean> {
         db.catalog_varietals.clear(),
         db.catalog_companions.clear(),
         db.catalog_recipes.clear(),
+        db.catalog_diagnostics.clear(),
       ]);
       await Promise.all([
         db.catalog_families.bulkAdd(families),
@@ -48,6 +51,7 @@ export async function seedCatalogIfNeeded(db: PlotDB): Promise<boolean> {
         db.catalog_varietals.bulkAdd(varietals),
         db.catalog_companions.bulkAdd(companions),
         db.catalog_recipes.bulkAdd(recipes),
+        db.catalog_diagnostics.bulkAdd(diagnostics),
       ]);
       await db.caches.put({
         key: MARKER_KEY,

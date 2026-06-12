@@ -34,6 +34,7 @@ import {
 import { validatePlacement, type PlacementWarning } from "../../engines/placement";
 import { plantHeightResolver, sunMapForArea, tileKey, type SunMap } from "../../engines/sunModel";
 import { getActiveClimate } from "../../db/climateRepo";
+import { activateInstance } from "../../db/instancesRepo";
 import { todayISO } from "../../lib/dates";
 import { SpriteImg } from "../../components/SpriteImg";
 import { GardenCanvas } from "./GardenCanvas";
@@ -412,11 +413,7 @@ function DesignerBody({
               tile={selectedTile}
               instances={instances}
               plantsById={plantsById}
-              onActivate={async (instanceId, date) => {
-                const inst = await db.instances.get(instanceId);
-                if (!inst) return;
-                await db.instances.put({ ...inst, plantedOn: date, status: "active", currentStage: "planted" });
-              }}
+              onActivate={(instanceId, date) => void activateInstance(instanceId, date)}
               onRemove={() => void eraseAt(selected.areaId, selected.col, selected.row)}
             />
           )}

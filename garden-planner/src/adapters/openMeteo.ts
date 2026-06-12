@@ -43,6 +43,27 @@ function toRecords(d: NonNullable<OMDaily["daily"]>): DailyRecord[] {
   return out;
 }
 
+/**
+ * Season-to-date daily actuals for GDD pacing (§13.3): the forecast endpoint
+ * serves up to 92 past days, covering most of a growing season without the
+ * archive's completeness lag.
+ */
+export async function getRecentDaily(
+  loc: Location,
+  pastDays = 92,
+): Promise<DailyRecord[]> {
+  const url =
+    `${FORECAST}?latitude=${loc.lat}&longitude=${loc.lon}` +
+    `&daily=temperature_2m_min,temperature_2m_max,precipitation_sum` +
+    `&past_days=${Math.min(pastDays, 92)}&forecast_days=1&timezone=auto`;
+  const { data } = await cachedJson(
+    `weather:recent:${key(loc)}`,
+    TTL.forecast,
+    () => fetchJson<OMDaily>(url),
+  );
+  return data.daily ? toRecords(data.daily) : [];
+}
+
 export const openMeteoWeather: WeatherAdapter = {
   async getHistoricalDaily(loc, fromYear) {
     const endYear = new Date().getFullYear() - 1; // archive lags ~5 days; whole years only
