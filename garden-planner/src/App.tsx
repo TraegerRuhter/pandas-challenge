@@ -1,11 +1,12 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { useLiveQuery } from "dexie-react-hooks";
 import { AppShell } from "./shell/AppShell";
 import { useAppStore } from "./store/appStore";
 import { useApplyTheme } from "./lib/useApplyTheme";
+import { db } from "./db/db";
 import {
   CalendarPage,
-  DesignerPage,
   EncyclopediaPage,
   PlantDetailPage,
   PlantNextPage,
@@ -15,11 +16,9 @@ import {
   TrackerPage,
 } from "./pages";
 
-/**
- * §21.2: Designer is the default landing once a garden exists; until gardens
- * exist (Phase 2) the Encyclopedia leads, since it is the first tab with
- * content (Phase 0 exit: "lists plants").
- */
+// §25: Konva loads only when the Designer opens.
+const DesignerPage = lazy(() => import("./pages/designer/DesignerPage"));
+
 export default function App() {
   const bootState = useAppStore((s) => s.bootState);
   const bootError = useAppStore((s) => s.bootError);
@@ -48,21 +47,30 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route element={<AppShell />}>
-          <Route index element={<Navigate to="/encyclopedia" replace />} />
-          <Route path="/encyclopedia" element={<EncyclopediaPage />} />
-          <Route path="/encyclopedia/:plantId" element={<PlantDetailPage />} />
-          <Route path="/calendar" element={<CalendarPage />} />
-          <Route path="/designer" element={<DesignerPage />} />
-          <Route path="/tracker" element={<TrackerPage />} />
-          <Route path="/plant-next" element={<PlantNextPage />} />
-          <Route path="/suggest" element={<SuggestPage />} />
-          <Route path="/tasks" element={<TasksPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="*" element={<Navigate to="/encyclopedia" replace />} />
-        </Route>
-      </Routes>
+      <Suspense fallback={<div className="p-6 text-[var(--color-ink-soft)]">Loading…</div>}>
+        <Routes>
+          <Route element={<AppShell />}>
+            <Route index element={<LandingRedirect />} />
+            <Route path="/encyclopedia" element={<EncyclopediaPage />} />
+            <Route path="/encyclopedia/:plantId" element={<PlantDetailPage />} />
+            <Route path="/calendar" element={<CalendarPage />} />
+            <Route path="/designer" element={<DesignerPage />} />
+            <Route path="/tracker" element={<TrackerPage />} />
+            <Route path="/plant-next" element={<PlantNextPage />} />
+            <Route path="/suggest" element={<SuggestPage />} />
+            <Route path="/tasks" element={<TasksPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="*" element={<LandingRedirect />} />
+          </Route>
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
+}
+
+/** §21.2: Designer leads once a garden exists; Encyclopedia before that. */
+function LandingRedirect() {
+  const count = useLiveQuery(() => db.gardens.count(), []);
+  if (count === undefined) return null;
+  return <Navigate to={count > 0 ? "/designer" : "/encyclopedia"} replace />;
 }

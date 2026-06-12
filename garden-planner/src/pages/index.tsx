@@ -10,17 +10,6 @@ export { PlantDetailPage } from "./encyclopedia/PlantDetailPage";
 export { SettingsPage } from "./SettingsPage";
 export { CalendarPage } from "./CalendarPage";
 
-export function DesignerPage() {
-  return (
-    <StubPage
-      title="Designer"
-      purpose="Tile-based 2D garden layout: areas and satellites, plants, structures, hardscape, water, elevation, orientation, and the sun map."
-      specRef="§12"
-      phase={2}
-    />
-  );
-}
-
 export function TrackerPage() {
   return (
     <StubPage
