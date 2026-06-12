@@ -90,6 +90,7 @@ export async function placePlant(
   area: GardenArea,
   plantId: string,
   tiles: Array<{ col: number; row: number }>,
+  plannedFor?: string, // §15 succession ghosts carry a future intended date
 ): Promise<PlantInstance> {
   const instance: PlantInstance = {
     id: newId(),
@@ -98,7 +99,7 @@ export async function placePlant(
     plantId,
     tiles,
     plantingMethod: "direct_sow",
-    plantedOn: todayISO(), // intended date; becomes real when activated (§13.1)
+    plantedOn: plannedFor ?? todayISO(), // intended date; real when activated (§13.1)
     currentStage: "planted",
     projectedStageDates: {},
     events: [],
@@ -136,6 +137,18 @@ export async function clearTile(
   }
   setTile(area, col, row, { type: "empty" }, tile.elevationCm);
   await saveGarden(garden);
+}
+
+/** Row-major free cells of an area (no content; elevation-only is free). */
+export function freeCells(area: GardenArea): Array<{ col: number; row: number }> {
+  const occupied = new Set(
+    area.tiles.filter((t) => t.content.type !== "empty").map((t) => `${t.col},${t.row}`),
+  );
+  const out: Array<{ col: number; row: number }> = [];
+  for (let row = 0; row < area.grid.rows; row++)
+    for (let col = 0; col < area.grid.cols; col++)
+      if (!occupied.has(`${col},${row}`)) out.push({ col, row });
+  return out;
 }
 
 export async function activeInstancesForGarden(gardenId: string): Promise<PlantInstance[]> {

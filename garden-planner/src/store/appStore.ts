@@ -40,9 +40,12 @@ interface AppState {
   bootError?: string;
   settings: Settings;
   activeGardenId?: string;
+  /** §16 → §12: plant chosen in Suggest, picked up by the Designer palette */
+  pendingPlantId?: string;
   init: () => Promise<void>;
   updateSettings: (patch: Partial<Settings>) => void;
   setActiveGarden: (id?: string) => void;
+  setPendingPlant: (id?: string) => void;
 }
 
 export const useAppStore = create<AppState>()((set, get) => ({
@@ -68,8 +71,11 @@ export const useAppStore = create<AppState>()((set, get) => ({
         await db.settings.put({ id: SETTINGS_ID, ...defaultSettings });
       }
       set({ bootState: "ready" });
-      // §13.2/§19: the daily stage pass runs on every app open, after boot.
-      void import("../db/instancesRepo").then((m) => m.runDailyPass());
+      // §13.2/§19: daily stage pass + care pass run on every app open.
+      void import("../db/instancesRepo")
+        .then((m) => m.runDailyPass())
+        .then(() => import("../db/careRepo"))
+        .then((m) => m.runCarePass());
     } catch (e) {
       set({ bootState: "error", bootError: String(e) });
     }
@@ -83,4 +89,5 @@ export const useAppStore = create<AppState>()((set, get) => ({
   },
 
   setActiveGarden: (id) => set({ activeGardenId: id }),
+  setPendingPlant: (id) => set({ pendingPlantId: id }),
 }));

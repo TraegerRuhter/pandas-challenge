@@ -118,7 +118,15 @@ function DesignerBody({
   onSwitchGarden: (id: string) => void;
   onNewGarden: () => Promise<void>;
 }) {
-  const [tool, setTool] = useState<Tool>({ t: "select" });
+  // §16 pipe: a plant chosen in Suggest/Plant Next preselects the brush.
+  const [tool, setTool] = useState<Tool>(() => {
+    const pending = useAppStore.getState().pendingPlantId;
+    if (pending) {
+      queueMicrotask(() => useAppStore.getState().setPendingPlant(undefined));
+      return { t: "plant", plantId: pending };
+    }
+    return { t: "select" };
+  });
   const [selected, setSelected] = useState<{ areaId: string; col: number; row: number } | null>(null);
   const [warnings, setWarnings] = useState<PlacementWarning[]>([]);
   const [sunOverlay, setSunOverlay] = useState(false);
