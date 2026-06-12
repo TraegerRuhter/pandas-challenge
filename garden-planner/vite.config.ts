@@ -5,7 +5,13 @@ import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 // https://vite.dev/config/
+// BASE_PATH lets the GitHub Pages build serve from /pandas-challenge/ while
+// local dev and root-domain hosts stay at "/". import.meta.env.BASE_URL (which
+// Vite derives from `base`) feeds the router basename and the SPA asset paths.
+const base = process.env.BASE_PATH || "/";
+
 export default defineConfig({
+  base,
   plugins: [
     react(),
     tailwindcss(),
@@ -18,7 +24,8 @@ export default defineConfig({
         short_name: "PLOT",
         description:
           "Planting, Layout & Operations Tracker — an offline-first garden planner.",
-        start_url: "/",
+        start_url: base,
+        scope: base,
         display: "standalone",
         orientation: "any",
         theme_color: "#2f6f3e",
