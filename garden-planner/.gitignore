@@ -25,3 +25,7 @@ dist-ssr
 
 # vite-plugin-pwa dev output
 dev-dist
+
+# The repo-root .gitignore ignores "lib/" (a Python build dir from the
+# PyCitySchools project); re-include this app's src/lib utilities.
+!src/lib/
